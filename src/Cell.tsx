@@ -1,14 +1,21 @@
-import React from 'react'
-import './Cell.css'
+import React from "react"
+import "./Cell.css"
+import CellState from "./utils/CellState"
 
 export interface CellProps {
-    value: number;
+    state: CellState;
 }
 
-export function Cell(props: CellProps) {
-    let classNames = 'cell'
-    if (props.value === 1) classNames += ' mine'
+export function Cell({state}: CellProps) {
+    let classNames = "cell"
+    let visual = "."
+    switch (state) {
+        case CellState.MINE:
+            classNames += " mine"
+            visual = "*"
+            break
+    }
     return (
-        <div className={classNames}>{props.value}</div>
+        <div className={classNames}>{visual}</div>
     )
 }
