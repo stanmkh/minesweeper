@@ -1,6 +1,6 @@
 import React from "react"
 import "./Cell.css"
-import CellState from "./utils/CellState"
+import CellState from "../../utils/CellState"
 
 export interface CellProps {
     state: CellState;

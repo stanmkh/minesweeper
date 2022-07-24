@@ -1,7 +1,7 @@
 import React from 'react'
-import {Cell} from './Cell'
-import BoardProps from './utils/BoardProps'
-import Board from './utils/Board'
+import {Cell} from './Cell/Cell'
+import BoardProps from '../utils/BoardProps'
+import Board from '../utils/Board'
 
 export function BoardRenderer(props: BoardProps) {
     console.log(props)
