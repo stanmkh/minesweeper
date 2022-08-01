@@ -9,3 +9,11 @@
 .mine {
     background-color: red;
 }
+
+.hidden {
+    background-color: gray;
+}
+
+.no-mine {
+    background-color: green;
+}

@@ -1,6 +1,8 @@
 enum CellState {
+    PROXIMITY,
+    NO_MINE,
     MINE,
-    NO_MINE
+    HIDDEN,
 }
 
 export default CellState

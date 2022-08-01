@@ -1,7 +1,7 @@
-import BoardProps from "./BoardProps"
-import CellState from "./CellState"
+import BoardProps from './BoardProps'
+import CellState from './CellState'
 
-export function createGameBoardState({width, height, mineCount}: BoardProps): CellState[][] {
+export function createRandomRevealedBoard({width, height, mineCount}: BoardProps): CellState[][] {
     if (width <= 0 || height <= 0) return []
     let counter = 0
     let board: CellState[][] = new Array(height)
@@ -15,7 +15,17 @@ export function createGameBoardState({width, height, mineCount}: BoardProps): Ce
     return board
 }
 
-function shuffle(array: number[][]) {
+export function createHiddenBoard({width, height}: BoardProps): CellState[][] {
+    if (width <= 0 || height <= 0) return []
+    return new Array(height)
+        .fill(0)
+        .map(() =>
+            new Array(width)
+                .fill(CellState.HIDDEN)
+        )
+}
+
+function shuffle(array: CellState[][]) {
     let width = array[0].length
     let height = array.length
     let size = width * height

@@ -1,5 +1,5 @@
 import React from 'react'
-import BoardRenderer from './BoardRenderer'
+import BoardRenderer from './BoardRenderer/BoardRenderer'
 
 class Minesweeper extends React.Component<any, any> {
     constructor(props: any) {
@@ -22,22 +22,22 @@ class Minesweeper extends React.Component<any, any> {
                     <label>Mine count:</label>
                     <input type={'number'} value={this.state.mineCount} onChange={this.changeMineCount}/>
                 </form>
-                <BoardRenderer width={Number(this.state.width)} height={Number(this.state.height)}
-                               mineCount={Number(this.state.mineCount)}/>
+                <BoardRenderer width={this.state.width} height={this.state.height}
+                               mineCount={this.state.mineCount}/>
             </div>
         )
     }
 
     changeWidth = (e: any) => {
-        this.setState({...this.state, width: e.target.value})
+        this.setState({...this.state, width: Number(e.target.value)})
     }
 
     changeHeight = (e: any) => {
-        this.setState({...this.state, height: e.target.value})
+        this.setState({...this.state, height: Number(e.target.value)})
     }
 
     changeMineCount = (e: any) => {
-        this.setState({...this.state, mineCount: e.target.value})
+        this.setState({...this.state, mineCount: Number(e.target.value)})
     }
 }
 
