@@ -1,4 +1,4 @@
-interface CellState {
+interface Cell {
     containsMine: boolean
     isHidden: boolean
     proximityCount: number
@@ -9,7 +9,7 @@ export enum CellType {
     MINE
 }
 
-export function cellStateFactoryMethod(cellType: CellType): CellState {
+export function cellStateFactoryMethod(cellType: CellType): Cell {
     switch (cellType) {
         case CellType.EMPTY:
             return {containsMine: false, isHidden: true, proximityCount: 0}
@@ -18,4 +18,4 @@ export function cellStateFactoryMethod(cellType: CellType): CellState {
     }
 }
 
-export default CellState
+export default Cell

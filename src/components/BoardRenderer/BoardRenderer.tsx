@@ -1,5 +1,5 @@
 import React from 'react'
-import {Cell} from '../Cell/Cell'
+import {CellRenderer} from '../CellRenderer/CellRenderer'
 import Board from '../../utils/Board'
 import BoardProps from '../../utils/BoardProps'
 import './BoardRenderer.css'
@@ -31,7 +31,7 @@ class BoardRenderer extends React.Component<BoardProps, BoardRendererState> {
             <div key={rowIndex} className={'row'}>
                 {
                     row.map(
-                        (value, columnIndex) => <Cell
+                        (value, columnIndex) => <CellRenderer
                             key={columnIndex}
                             state={value}
                             onclick={() => cellClickCallback(rowIndex, columnIndex)}

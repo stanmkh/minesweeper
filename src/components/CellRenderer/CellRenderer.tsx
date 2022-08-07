@@ -1,13 +1,13 @@
 import React from 'react'
-import './Cell.css'
-import CellState from '../../utils/CellState'
+import './CellRenderer.css'
+import Cell from '../../utils/Cell'
 
 export interface CellProps {
-    state: CellState
+    state: Cell
     onclick: () => void
 }
 
-export function Cell({state, onclick}: CellProps) {
+export function CellRenderer({state, onclick}: CellProps) {
     const {className, visual} = cellStateToRenderData(state)
     return (
         <div className={`cell ${className}`} onClick={onclick}>
@@ -16,7 +16,7 @@ export function Cell({state, onclick}: CellProps) {
     )
 }
 
-function cellStateToRenderData(cellState: CellState) {
+function cellStateToRenderData(cellState: Cell) {
     if (cellState.isHidden) {
         return {visual: '?', className: 'hidden'}
     }

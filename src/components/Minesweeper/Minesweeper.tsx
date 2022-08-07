@@ -1,5 +1,5 @@
 import React from 'react'
-import BoardRenderer from './BoardRenderer/BoardRenderer'
+import BoardRenderer from '../BoardRenderer/BoardRenderer'
 
 class Minesweeper extends React.Component<any, any> {
     constructor(props: any) {
