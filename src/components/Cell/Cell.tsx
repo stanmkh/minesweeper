@@ -8,25 +8,23 @@ export interface CellProps {
 }
 
 export function Cell({state, onclick}: CellProps) {
-    let classNames = 'cell'
-    let visual
-    switch (state) {
-        case CellState.MINE:
-            classNames += ' mine'
-            visual = '*'
-            break
-        case CellState.NO_MINE:
-            classNames += ' no-mine'
-            visual = '.'
-            break
-        case CellState.HIDDEN:
-        default:
-            visual = '_'
-            classNames += ' hidden'
-    }
+    const {className, visual} = cellStateToRenderData(state)
     return (
-        <div className={classNames} onClick={onclick}>
+        <div className={`cell ${className}`} onClick={onclick}>
             {visual}
         </div>
     )
+}
+
+function cellStateToRenderData(cellState: CellState) {
+    if (cellState.isHidden) {
+        return {visual: '?', className: 'hidden'}
+    }
+    if (cellState.containsMine) {
+        return {visual: '*', className: 'mine'}
+    }
+    if (cellState.proximityCount === 0) {
+        return {visual: '_', className: 'empty'}
+    }
+    return {visual: cellState.proximityCount.toString(), className: 'proximity'}
 }

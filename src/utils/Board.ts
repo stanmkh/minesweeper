@@ -1,23 +1,41 @@
-import {createHiddenBoard, createRandomRevealedBoard} from './BoardStateHelpers'
+import {createBoard} from './BoardStateHelpers'
 import BoardProps from './BoardProps'
 import CellState from './CellState'
 
 class Board {
 
-    revealedBoardState: CellState[][]
-    boardState: CellState[][]
+    cells: CellState[][]
 
     constructor(boardProps: BoardProps) {
-        this.revealedBoardState = createRandomRevealedBoard(boardProps)
-        this.boardState = createHiddenBoard(boardProps)
+        this.cells = createBoard(boardProps)
     }
 
     mapRows<T>(callback: (row: CellState[], rowIndex: number) => T): T[] {
-        return this.boardState.map(callback)
+        return this.cells.map(callback)
     }
 
     revealCell(row: number, column: number): void {
-        this.boardState[row][column] = this.revealedBoardState[row][column]
+        if (row < 0 || row >= this.cells.length || column < 0 || column >= this.cells[0].length) {
+            return
+        }
+
+        const cell = this.cells[row][column]
+
+        if (!cell.isHidden) {
+            return
+        }
+
+        cell.isHidden = false
+        if (!cell.containsMine && cell.proximityCount === 0) {
+            this.revealCell(row - 1, column - 1)
+            this.revealCell(row - 1, column)
+            this.revealCell(row - 1, column + 1)
+            this.revealCell(row, column - 1)
+            this.revealCell(row, column + 1)
+            this.revealCell(row + 1, column - 1)
+            this.revealCell(row + 1, column)
+            this.revealCell(row + 1, column + 1)
+        }
     }
 }
 

@@ -1,7 +1,7 @@
 import BoardProps from './BoardProps'
-import CellState from './CellState'
+import CellState, {cellStateFactoryMethod, CellType} from './CellState'
 
-export function createRandomRevealedBoard({width, height, mineCount}: BoardProps): CellState[][] {
+export function createBoard({width, height, mineCount}: BoardProps): CellState[][] {
     if (width <= 0 || height <= 0) return []
     let counter = 0
     let board: CellState[][] = new Array(height)
@@ -9,20 +9,15 @@ export function createRandomRevealedBoard({width, height, mineCount}: BoardProps
         .map(() =>
             new Array(width)
                 .fill(0)
-                .map(() => counter++ < mineCount ? CellState.MINE : CellState.NO_MINE),
+                .map(() =>
+                    counter++ < mineCount
+                        ? cellStateFactoryMethod(CellType.MINE)
+                        : cellStateFactoryMethod(CellType.EMPTY),
+                ),
         )
     shuffle(board)
+    addProximityValues(board)
     return board
-}
-
-export function createHiddenBoard({width, height}: BoardProps): CellState[][] {
-    if (width <= 0 || height <= 0) return []
-    return new Array(height)
-        .fill(0)
-        .map(() =>
-            new Array(width)
-                .fill(CellState.HIDDEN)
-        )
 }
 
 function shuffle(array: CellState[][]) {
@@ -38,13 +33,43 @@ function shuffle(array: CellState[][]) {
     }
 }
 
-function getIndex(array: number[][], width: number, index: number): number {
+function addProximityValues(array: CellState[][]) {
+    for (let row = 0; row < array.length; row++) {
+        for (let column = 0; column < array[0].length; column++) {
+            let count = 0
+
+            if (containsMine(array, row - 1, column - 1)) count++
+            if (containsMine(array, row, column - 1)) count++
+            if (containsMine(array, row + 1, column - 1)) count++
+            if (containsMine(array, row - 1, column)) count++
+            if (containsMine(array, row + 1, column)) count++
+            if (containsMine(array, row - 1, column + 1)) count++
+            if (containsMine(array, row, column + 1)) count++
+            if (containsMine(array, row + 1, column + 1)) count++
+
+            array[row][column].proximityCount = count
+        }
+    }
+}
+
+function containsMine(array: CellState[][], row: number, column: number) {
+    const height = array.length
+    const width = array[0].length
+
+    if (row < 0 || row >= height || column < 0 || column >= width) {
+        return false
+    }
+
+    return array[row][column].containsMine
+}
+
+function getIndex(array: CellState[][], width: number, index: number): CellState {
     let i = Math.floor(index / width)
     let j = index % width
     return array[i][j]
 }
 
-function setIndex(array: number[][], width: number, index: number, value: number): void {
+function setIndex(array: CellState[][], width: number, index: number, value: CellState): void {
     let i = Math.floor(index / width)
     let j = index % width
     array[i][j] = value
