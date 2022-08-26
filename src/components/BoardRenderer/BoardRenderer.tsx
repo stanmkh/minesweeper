@@ -1,5 +1,5 @@
 import React from 'react'
-import {CellRenderer} from '../CellRenderer/CellRenderer'
+import CellRenderer from '../CellRenderer/CellRenderer'
 import Board from '../../utils/Board'
 import BoardProps from '../../utils/BoardProps'
 import './BoardRenderer.css'
@@ -27,6 +27,14 @@ class BoardRenderer extends React.Component<BoardProps, BoardRendererState> {
             this.state.board.revealCell(row, column)
             this.setState({...this.state})
         }
+
+        let cellContextMenuCallback = (row: number, column: number, event: MouseEvent) => {
+            event.preventDefault()
+            console.log('Hello world')
+            this.state.board.flag(row, column)
+            this.setState({...this.state})
+        }
+
         let boardDom = this.state.board.mapRows((row, rowIndex) =>
             <div key={rowIndex} className={'row'}>
                 {
@@ -35,6 +43,7 @@ class BoardRenderer extends React.Component<BoardProps, BoardRendererState> {
                             key={columnIndex}
                             state={value}
                             onclick={() => cellClickCallback(rowIndex, columnIndex)}
+                            oncontextmenu={(event) => cellContextMenuCallback(rowIndex, columnIndex, event)}
                         />,
                     )
                 }

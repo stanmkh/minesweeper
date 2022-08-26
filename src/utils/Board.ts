@@ -36,6 +36,13 @@ class Board {
             this.revealCell(row + 1, column + 1)
         }
     }
+
+    flag(row: number, column: number): void {
+        const cell = this.cells[row][column]
+        if (cell.isHidden) {
+            cell.isFlagged = !cell.isFlagged;
+        }
+    }
 }
 
 function createBoard({width, height, mineCount}: BoardProps): Cell[][] {

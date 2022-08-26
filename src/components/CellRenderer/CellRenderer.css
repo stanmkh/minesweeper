@@ -4,6 +4,9 @@
     height: 30px;
     border-style: double;
     text-align: center;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
 }
 
 .hidden {
@@ -21,4 +24,8 @@
 .proximity {
     background-color: white;
     color: blue;
+}
+
+.flagged {
+    background-color: deeppink;
 }
