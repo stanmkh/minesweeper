@@ -1,20 +1,42 @@
 import React, {MouseEventHandler} from 'react'
 import './CellRenderer.css'
-import Cell from '../../utils/Cell'
+import Cell from '../../logic/Cell'
 
 export interface CellProps {
     state: Cell
-    onclick: () => void
-    oncontextmenu: (e: any) => void //todo change any to something more specific
+    onClick: () => void
+    onRightMouseClick: () => void
+    onMiddleMouseClick: () => void
 }
 
-function CellRenderer({state, onclick, oncontextmenu}: CellProps) {
+function CellRenderer({state, onClick, onRightMouseClick, onMiddleMouseClick}: CellProps) {
     const {className, visual} = cellStateToRenderData(state)
     return (
-        <div className={`cell ${className}`} onClick={onclick} onContextMenu={oncontextmenu}>
+        <div
+            className={`cell ${className}`}
+            onClick={onClick}
+            onContextMenu={onContextMenyWrapperProvider(onRightMouseClick)}
+            onMouseDown={middleButtonClickWrapperProvider(onMiddleMouseClick)} //middle mouse click handler
+        >
             {visual}
         </div>
     )
+}
+
+function onContextMenyWrapperProvider(handler: () => void): MouseEventHandler<HTMLDivElement> {
+    return function (event) {
+        event.preventDefault()
+        handler()
+    }
+}
+
+function middleButtonClickWrapperProvider(handler: () => void): MouseEventHandler<HTMLDivElement> {
+    return function (event) {
+        if (event.button === 1) {
+            event.preventDefault()
+            handler()
+        }
+    }
 }
 
 function cellStateToRenderData(cellState: Cell) {

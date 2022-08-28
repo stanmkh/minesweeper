@@ -13,35 +13,70 @@ class Board {
         return this.cells.map(callback)
     }
 
-    revealCell(row: number, column: number): void {
-        if (row < 0 || row >= this.cells.length || column < 0 || column >= this.cells[0].length) {
-            return
-        }
-
+    revealCell = (row: number, column: number) => {
         const cell = this.cells[row][column]
 
-        if (!cell.isHidden) {
+        if (!cell.isHidden || cell.isFlagged) {
             return
         }
 
         cell.isHidden = false
         if (!cell.containsMine && cell.proximityCount === 0) {
-            this.revealCell(row - 1, column - 1)
-            this.revealCell(row - 1, column)
-            this.revealCell(row - 1, column + 1)
-            this.revealCell(row, column - 1)
-            this.revealCell(row, column + 1)
-            this.revealCell(row + 1, column - 1)
-            this.revealCell(row + 1, column)
-            this.revealCell(row + 1, column + 1)
+            this.executeForAllCellsAround<void>(row, column, this.revealCell)
         }
     }
 
     flag(row: number, column: number): void {
         const cell = this.cells[row][column]
         if (cell.isHidden) {
-            cell.isFlagged = !cell.isFlagged;
+            cell.isFlagged = !cell.isFlagged
         }
+    }
+
+    revealSurrounding(row: number, column: number): void {
+        const cell = this.cells[row][column]
+        if (!cell.isHidden && !cell.isFlagged) {
+            const numberOfFlagsAround = this.calculateNumberOfFlagsAround(row, column)
+            if (numberOfFlagsAround === cell.proximityCount) {
+                this.executeForAllCellsAround<void>(row, column, this.revealCell)
+            }
+        }
+    }
+
+    private calculateNumberOfFlagsAround(row: number, column: number) {
+        const flagsAroundMatrix = this.executeForAllCellsAround<boolean>(row, column, this.checkIfFlagged)
+
+        return flagsAroundMatrix.reduce<number>(
+            (accumulator, currentValue) => currentValue ? accumulator + 1 : accumulator,
+            0,
+        )
+    }
+
+    private checkIfFlagged = (row: number, column: number): boolean => {
+        return this.cells[row][column].isFlagged
+    }
+
+    private executeForAllCellsAround<T>(
+        row: number,
+        column: number,
+        handler: (row: number, column: number) => T,
+    ): T[] {
+        const handlerWrapper = (row: number, column: number): T|null => {
+            if (row < 0 || row >= this.cells.length || column < 0 || column >= this.cells[0].length) {
+                return null
+            }
+            return handler(row, column)
+        }
+        return [
+            handlerWrapper(row - 1, column - 1),
+            handlerWrapper(row - 1, column),
+            handlerWrapper(row - 1, column + 1),
+            handlerWrapper(row, column - 1),
+            handlerWrapper(row, column + 1),
+            handlerWrapper(row + 1, column - 1),
+            handlerWrapper(row + 1, column),
+            handlerWrapper(row + 1, column + 1),
+        ].filter((value) => value != null) as T[]
     }
 }
 

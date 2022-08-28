@@ -1,7 +1,7 @@
 import React from 'react'
 import CellRenderer from '../CellRenderer/CellRenderer'
-import Board from '../../utils/Board'
-import BoardProps from '../../utils/BoardProps'
+import Board from '../../logic/Board'
+import BoardProps from '../../logic/BoardProps'
 import './BoardRenderer.css'
 
 interface BoardRendererState {
@@ -28,10 +28,13 @@ class BoardRenderer extends React.Component<BoardProps, BoardRendererState> {
             this.setState({...this.state})
         }
 
-        let cellContextMenuCallback = (row: number, column: number, event: MouseEvent) => {
-            event.preventDefault()
-            console.log('Hello world')
+        let cellRightClickCallback = (row: number, column: number) => {
             this.state.board.flag(row, column)
+            this.setState({...this.state})
+        }
+
+        let cellMiddleClickCallback = (row: number, column: number) => {
+            this.state.board.revealSurrounding(row, column)
             this.setState({...this.state})
         }
 
@@ -42,8 +45,9 @@ class BoardRenderer extends React.Component<BoardProps, BoardRendererState> {
                         (value, columnIndex) => <CellRenderer
                             key={columnIndex}
                             state={value}
-                            onclick={() => cellClickCallback(rowIndex, columnIndex)}
-                            oncontextmenu={(event) => cellContextMenuCallback(rowIndex, columnIndex, event)}
+                            onClick={() => cellClickCallback(rowIndex, columnIndex)}
+                            onRightMouseClick={() => cellRightClickCallback(rowIndex, columnIndex)}
+                            onMiddleMouseClick={() => cellMiddleClickCallback(rowIndex, columnIndex)}
                         />,
                     )
                 }
