@@ -45,14 +45,17 @@ class BoardRenderer extends React.Component<BoardProps, BoardRendererState> {
 
     private cellClickCallback = (row: number, column: number) => {
         this.state.board.revealCell(row, column)
+        this.forceUpdate()
     }
 
     private cellRightClickCallback = (row: number, column: number) => {
         this.state.board.flag(row, column)
+        this.forceUpdate()
     }
 
     private cellMiddleClickCallback = (row: number, column: number) => {
         this.state.board.revealSurrounding(row, column)
+        this.forceUpdate()
     }
 }
 
