@@ -4,13 +4,13 @@ import Cell, {cellStateFactoryMethod, CellType} from './Cell'
 class Board {
 
     cells: Cell[][]
-    moveCount: number
+    cellRevealCount: number
     props: BoardProps
 
     constructor(boardProps: BoardProps) {
         this.props = boardProps
         this.cells = createPlaceholderBoard(boardProps)
-        this.moveCount = 0
+        this.cellRevealCount = 0
     }
 
     mapRows<T>(callback: (row: Cell[], rowIndex: number) => T): T[] {
@@ -19,7 +19,7 @@ class Board {
 
     revealCell = (row: number, column: number) => {
 
-        if (this.moveCount === 0) {
+        if (this.cellRevealCount === 0) {
             this.cells = createRealBoard(this.props, row, column)
         }
 
@@ -29,13 +29,16 @@ class Board {
             return
         }
 
-        this.moveCount++
-
         if (cell.containsMine) {
-            this.endGame(row, column)
+            this.endGameWithFailure(row, column)
         }
 
         cell.isHidden = false
+        this.cellRevealCount++
+
+        if (this.allEmptyCellsRevealed()) {
+            this.endGameWithSuccess()
+        }
 
         if (!cell.containsMine && cell.proximityCount === 0) {
             this.executeForAllCellsAround<void>(row, column, this.revealCell)
@@ -59,7 +62,12 @@ class Board {
         }
     }
 
-    private endGame(row: number, column: number) {
+    private allEmptyCellsRevealed(): boolean {
+        const emptyCellsCount = this.props.width * this.props.height - this.props.mineCount
+        return this.cellRevealCount === emptyCellsCount
+    }
+
+    private endGameWithFailure(row: number, column: number) {
         this.cells.forEach((row) => row.forEach((
             (cell) => {
                 if (cell.isFlagged && !cell.containsMine) {
@@ -73,6 +81,16 @@ class Board {
             }
         )))
         this.cells[row][column].isExplosion = true
+    }
+
+    private endGameWithSuccess() {
+        this.cells.forEach((row) => row.forEach((
+            (cell) => {
+                if (cell.isHidden && !cell.isFlagged) {
+                    cell.isFlagged = true
+                }
+            }
+        )))
     }
 
     private calculateNumberOfFlagsAround(row: number, column: number) {
