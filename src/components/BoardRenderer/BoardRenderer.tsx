@@ -23,21 +23,6 @@ class BoardRenderer extends React.Component<BoardProps, BoardRendererState> {
     }
 
     render() {
-        let cellClickCallback = (row: number, column: number) => {
-            this.state.board.revealCell(row, column)
-            this.setState({...this.state})
-        }
-
-        let cellRightClickCallback = (row: number, column: number) => {
-            this.state.board.flag(row, column)
-            this.setState({...this.state})
-        }
-
-        let cellMiddleClickCallback = (row: number, column: number) => {
-            this.state.board.revealSurrounding(row, column)
-            this.setState({...this.state})
-        }
-
         let boardDom = this.state.board.mapRows((row, rowIndex) =>
             <div key={rowIndex} className={'row'}>
                 {
@@ -45,9 +30,9 @@ class BoardRenderer extends React.Component<BoardProps, BoardRendererState> {
                         (value, columnIndex) => <CellRenderer
                             key={columnIndex}
                             state={value}
-                            onClick={() => cellClickCallback(rowIndex, columnIndex)}
-                            onRightMouseClick={() => cellRightClickCallback(rowIndex, columnIndex)}
-                            onMiddleMouseClick={() => cellMiddleClickCallback(rowIndex, columnIndex)}
+                            onClick={() => this.cellClickCallback(rowIndex, columnIndex)}
+                            onRightMouseClick={() => this.cellRightClickCallback(rowIndex, columnIndex)}
+                            onMiddleMouseClick={() => this.cellMiddleClickCallback(rowIndex, columnIndex)}
                         />,
                     )
                 }
@@ -56,6 +41,18 @@ class BoardRenderer extends React.Component<BoardProps, BoardRendererState> {
         return (
             <div>{boardDom}</div>
         )
+    }
+
+    private cellClickCallback = (row: number, column: number) => {
+        this.state.board.revealCell(row, column)
+    }
+
+    private cellRightClickCallback = (row: number, column: number) => {
+        this.state.board.flag(row, column)
+    }
+
+    private cellMiddleClickCallback = (row: number, column: number) => {
+        this.state.board.revealSurrounding(row, column)
     }
 }
 
