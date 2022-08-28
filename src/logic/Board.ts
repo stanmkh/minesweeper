@@ -4,9 +4,13 @@ import Cell, {cellStateFactoryMethod, CellType} from './Cell'
 class Board {
 
     cells: Cell[][]
+    moveCount: number
+    props: BoardProps
 
     constructor(boardProps: BoardProps) {
-        this.cells = createBoard(boardProps)
+        this.props = boardProps
+        this.cells = createPlaceholderBoard(boardProps)
+        this.moveCount = 0
     }
 
     mapRows<T>(callback: (row: Cell[], rowIndex: number) => T): T[] {
@@ -14,11 +18,18 @@ class Board {
     }
 
     revealCell = (row: number, column: number) => {
+
+        if (this.moveCount === 0) {
+            this.cells = createRealBoard(this.props, row, column)
+        }
+
         const cell = this.cells[row][column]
 
         if (!cell.isHidden || cell.isFlagged) {
             return
         }
+
+        this.moveCount++
 
         if (cell.containsMine) {
             this.endGame(row, column)
@@ -101,35 +112,57 @@ class Board {
     }
 }
 
-function createBoard({width, height, mineCount}: BoardProps): Cell[][] {
-    if (width <= 0 || height <= 0) return []
-    let counter = 0
-    let board: Cell[][] = new Array(height)
+function createPlaceholderBoard({width, height}: BoardProps): Cell[][] {
+    return new Array(height)
         .fill(0)
-        .map(() =>
-            new Array(width)
-                .fill(0)
-                .map(() =>
-                    counter++ < mineCount
-                        ? cellStateFactoryMethod(CellType.MINE)
-                        : cellStateFactoryMethod(CellType.EMPTY),
-                ),
+        .map(() => new Array(width)
+            .fill(cellStateFactoryMethod(CellType.MINE))
         )
-    shuffle(board)
+}
+
+function createRealBoard({width, height, mineCount}: BoardProps, row: number, column: number): Cell[][] {
+    if (width <= 0 || height <= 0) return []
+    const lengthOfCellArrayWithoutSafeCell = width * height - 1
+    let cells: Cell[] = createCellArray(lengthOfCellArrayWithoutSafeCell, mineCount)
+    shuffle(cells)
+    insertSafeCell(width, row, column, cells)
+    const board = cellArrayToBoard(width, height, cells)
     addProximityValues(board)
     return board
 }
 
-function shuffle(array: Cell[][]) {
-    let width = array[0].length
-    let height = array.length
-    let size = width * height
-    for (let i = 0; i < size - 1; i++) {
-        let randomIndex = getRandomInt(size - i - 1) + i + 1
-        // console.log(`for index ${i} swapping ${i} and ${randomIndex}, upper limit is set to ${size - i - 1}`)
-        let swapCache = getIndex(array, width, i)
-        setIndex(array, width, i, getIndex(array, width, randomIndex))
-        setIndex(array, width, randomIndex, swapCache)
+function createCellArray(ofLength: number, numberOfMines: number) {
+    let counter = 0
+    return new Array(ofLength)
+        .fill(0)
+        .map(() => counter++ < numberOfMines
+            ? cellStateFactoryMethod(CellType.MINE)
+            : cellStateFactoryMethod(CellType.EMPTY)
+        )
+}
+
+function cellArrayToBoard(width: number, height: number, array: Cell[]): Cell[][] {
+    let board = new Array(height)
+        .fill(0)
+        .map(() => new Array(width)
+            .fill(null)
+        )
+    array.forEach((cell, index) => {
+        board[Math.floor(index / width)][index % width] = cell
+    })
+    return board
+}
+
+function insertSafeCell(width: number, row: number, column: number, cells: Cell[]): void {
+    cells.splice(row * width + column, 0, cellStateFactoryMethod(CellType.EMPTY))
+}
+
+function shuffle(array: any[]) {
+    for (let i = 0; i < array.length - 1; i++) {
+        let randomIndex = getRandomInt(array.length - i - 1) + i + 1
+        let swapCache = array[randomIndex]
+        array[randomIndex] = array[i]
+        array[i] = swapCache
     }
 }
 
@@ -161,18 +194,6 @@ function containsMine(array: Cell[][], row: number, column: number) {
     }
 
     return array[row][column].containsMine
-}
-
-function getIndex(array: Cell[][], width: number, index: number): Cell {
-    let i = Math.floor(index / width)
-    let j = index % width
-    return array[i][j]
-}
-
-function setIndex(array: Cell[][], width: number, index: number, value: Cell): void {
-    let i = Math.floor(index / width)
-    let j = index % width
-    array[i][j] = value
 }
 
 function getRandomInt(upperLimit: number) {
