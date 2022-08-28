@@ -40,6 +40,12 @@ function middleButtonClickWrapperProvider(handler: () => void): MouseEventHandle
 }
 
 function cellStateToRenderData(cellState: Cell) {
+    if (cellState.isExplosion) {
+        return {visual: '*', className: 'explosion'}
+    }
+    if (cellState.isWrong) {
+        return {visual: 'F', className: 'wrong'}
+    }
     if (cellState.isFlagged) {
         return {visual: 'F', className: 'flagged'}
     }

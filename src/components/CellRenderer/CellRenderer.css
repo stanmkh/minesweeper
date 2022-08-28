@@ -17,6 +17,10 @@
     background-color: red;
 }
 
+.explosion {
+    background-color: yellow;
+}
+
 .empty {
     background-color: white;
 }
@@ -27,5 +31,9 @@
 }
 
 .flagged {
+    background-color: pink;
+}
+
+.wrong {
     background-color: deeppink;
 }

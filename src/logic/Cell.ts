@@ -3,6 +3,19 @@ interface Cell {
     isHidden: boolean
     proximityCount: number
     isFlagged: boolean
+    isExplosion: boolean
+    isWrong: boolean
+}
+
+function initEmptyCell(): Cell {
+    return {
+        containsMine: false,
+        isHidden: true,
+        proximityCount: 0,
+        isFlagged: false,
+        isExplosion: false,
+        isWrong: false
+    }
 }
 
 export enum CellType {
@@ -11,12 +24,15 @@ export enum CellType {
 }
 
 export function cellStateFactoryMethod(cellType: CellType): Cell {
+    let cell = initEmptyCell()
     switch (cellType) {
         case CellType.EMPTY:
-            return {containsMine: false, isHidden: true, proximityCount: 0, isFlagged: false}
+            break
         case CellType.MINE:
-            return {containsMine: true, isHidden: true, proximityCount: 0, isFlagged: false}
+            cell.containsMine = true
+            break
     }
+    return cell
 }
 
 export default Cell

@@ -20,7 +20,12 @@ class Board {
             return
         }
 
+        if (cell.containsMine) {
+            this.endGame(row, column)
+        }
+
         cell.isHidden = false
+
         if (!cell.containsMine && cell.proximityCount === 0) {
             this.executeForAllCellsAround<void>(row, column, this.revealCell)
         }
@@ -41,6 +46,22 @@ class Board {
                 this.executeForAllCellsAround<void>(row, column, this.revealCell)
             }
         }
+    }
+
+    private endGame(row: number, column: number) {
+        this.cells.forEach((row) => row.forEach((
+            (cell) => {
+                if (cell.isFlagged && !cell.containsMine) {
+                    cell.isWrong = true
+                    return
+                }
+                if (cell.isHidden) {
+                    cell.isHidden = false
+                    return
+                }
+            }
+        )))
+        this.cells[row][column].isExplosion = true
     }
 
     private calculateNumberOfFlagsAround(row: number, column: number) {
